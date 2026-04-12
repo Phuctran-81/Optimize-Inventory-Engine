@@ -1,7 +1,39 @@
 # Reorder Point Setup Model
 ## I. OVERALL
-## 1. PROBLEM:
+## 1. Executive Summary
+**Objective:** Engineered an automated Inventory Reorder Point (ROP) system to solve the "Overstock vs. Stock-out" paradox for 500 unique store-item combinations. By transitioning from a flat traditional model to a **Seasonally-Adjusted engine**, I successfully maintained a **99% Service Level** while reducing weekly excess inventory cost by **2.82%**.
+## 2. Key Project Insights
+- **High-Precision Seasonality:** Identified the differencerate in sales between weekdays and the weekly average, which traditional model miss, allowing for more accurate inventory calculations.
+- **Automated Promotion Detection:** Developed a statistical outlier detection model (Basline 30day + 2 standard deviation) to flag missing promotion dates and calculate a **Promotion Lift Factor**, reducing shortage risks during high-traffic events.
+- **Strategic Capital Allocation:** Implemented ABC Revenue Classification to priortize Class A items (80% of revenue), ensuring 90% daily availability for top-performers while minimizing the "carrying cost" of slow-moving stock.
+- **Validated Reliability:** Conducted a rigorous 12-month backtest across 26,474 data points to prove model efficiency.
+-----------------------------
+## II. ANALYTICAL FRAMEWORK: A 6-STAGE DEEP DIVE
+## 1. Ask
 The goal of this project is to build a  model establishing inventory reorder point. The model will balance between ensuring the product availability and minizing carrying cost.
+## 2. Prepare
+### Data Sourcing:
+The raw dataset was originally sourced from Kaggle with **913,000 rows** (Store Item Demand Forecasting Challenge). For this analysis, the data has been ingested into a SQL Server environment. This setup allows for the high-performance processing required to handle the 5-year history of daily sales across 10 stores and 50 items.
+### Data Storing
+A tiered strategy in MS SQL Server was used to ensure integrity:
+- Bronze Layer: Contains immutable raw CSV imports as a “Single Source of Truth”.
+- Silver Layer: Contains processed datasets (remove duplicate, error data, add new column ….)
+- Gold Layer: Contains cleaned, validated dataset for staged analysis.
+  
+## 3. Process (Data Engineering & Cleaning)
+### A. Bronze to Silver
+#### Data integrity and consistency verification
+Data integrity Verification: Used `COUNT(DISTINCT item)` grouped by store to ensure that no store lost product.
+Data consistency Verification:
+- Verifying data duplication by checking the composite key of `date` + `store` + `item` has zero duplicates, ensuring that the dataset will be accurate and not double-counted.
+- Checking data errors to ensure no null values.
+#### Data Enrichment
+New derived columns were created to unlock deeper insights:
+- Temporal Features: `weekday_name`, `weekday_number`, `week`
+- `Baseline_30d`, `volatility_30d`
+- Primarykey
+
+
 ## 2. ACTIONS:
 ### A. Build the Reorder Point Setup Model
 #### a. Categorizing the store-item
