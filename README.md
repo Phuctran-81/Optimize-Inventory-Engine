@@ -14,27 +14,42 @@ The goal of this project is to build a  model establishing inventory reorder poi
 ## 2. Prepare
 ### Data Sourcing:
 The raw dataset was originally sourced from Kaggle with **913,000 rows** (Store Item Demand Forecasting Challenge). For this analysis, the data has been ingested into a SQL Server environment. This setup allows for the high-performance processing required to handle the 5-year history of daily sales across 10 stores and 50 items.
-### Data Storing
+### Data Storage
 A tiered strategy in MS SQL Server was used to ensure integrity:
 - Bronze Layer: Contains immutable raw CSV imports as a “Single Source of Truth”.
 - Silver Layer: Contains processed datasets (remove duplicate, error data, add new column ….)
 - Gold Layer: Contains cleaned, validated dataset for staged analysis.
   
 ## 3. Process (Data Engineering & Cleaning)
+<img width="810" height="431" alt="image" src="https://github.com/user-attachments/assets/ad1d22a8-d48d-4379-99fe-c259cbf1e582" />
+
 ### A. Bronze to Silver
 #### Data integrity and consistency verification
 Data integrity Verification: Used `COUNT(DISTINCT item)` grouped by store to ensure that no store lost product.
 Data consistency Verification:
 - Verifying data duplication by checking the composite key of `date` + `store` + `item` has zero duplicates, ensuring that the dataset will be accurate and not double-counted.
 - Checking data errors to ensure no null values.
-#### Data Enrichment
-New derived columns were created to unlock deeper insights:
-- Temporal Features: `weekday_name`, `weekday_number`, `week`
-- `Baseline_30d`, `volatility_30d`
-- Primarykey
+#### Data enrichment
+New drived columns were created to unlock deeper insight:
+- Temporal Feature: calculating new column such as week_calendar to enable calculate the weekly inventory, extracting weekday_name and weekday_number to enable calculate the seasonality of weekday sales, creating new column dwh_create_date to manage data daily updated.
+- Primary Key: create primary_key to manage data.
+### B. Silver to Gold
+Create two new table gold.dim_seasonality_index and gold.dim_abc_category to optimize the performance when updating new data.
+#### a. gold.dim_seasonality_index table
+- Calculating the average of the ratio between weekday sales and average week sales to get seasonality index of each weekday.
+- Performed ROW_NUMBER () to create primary key for this table.
+#### b. gold.dim_category
+- Performed Window function rolling-sum the percentage of revenue of each item at each store to cagorize the item.
+- Performed ROW_NUMBER () to create primary key for this table.
+##### c. Gold.fact_train
+- Performed Window_function to calculate the 30 day average sales of each item at each store and the 30 day standard deviation of sales of each item at each store.
+- Flagging the promotion day by detecting days where sales > 30 day average sales + 2 * 30 day standard deviation.
+- Performed JOIN function to get foreign key from gold.dim_category and gold.dim_seasonality_index table.
+- Finally, filter out 30 first days of each item at each store, that rows miss data to calculate the complete 30 day average sales and 30 day standard deviation.
+<img width="1115" height="704" alt="image" src="https://github.com/user-attachments/assets/627239a8-78df-4026-a791-2c7ec1ccb8b0" />
 
 
-## 2. ACTIONS:
+## 4. ANALYZE:
 ### A. Build the Reorder Point Setup Model
 #### a. Categorizing the store-item
 **Purpose:** The primary goal of the store-item classification is to prioritize management focus and capital allocation. By segmenting my store-item, I can apply different "Service Level" targets (Z-scores) to specific categories. This strategy approach ensures high availability for critical, high-value items (Class A) while preventing over-investment in slow-moving stock (Class C). 
@@ -101,13 +116,13 @@ After calculating Lift factor, i used the following formula for establishing Pro
 - **Backtest Duration:** the last 12-month data of dataset.
 - **Scope:** 50 items across 10 stores (500 unique item-store).
 - **Logic:** Simulated weekly ordering cucles by comparing forecasted ROP against actual weekly demand over the final year of the 5-year dataset.
-## 3. RESULTS:
+## 5. SHARE:
 #### a. Seasonality-Adjusted ROP model
 - The backtest is implemented in total 26,474 weeks (across 50 items in 10 stores), there are **26,275 overstock weeks** with the **average excess rate at 21.77%** and **199 outstock weeks** with the **average shortage rate at 2.07%**. 
 - The Seasonality-Adjusted ROP model satisfies the **service level of 99%** which is similar to Traditional ROP model while simultaneously **reducing weekly excess inventory by 2.82%** compared to the traditional ROP method.
 #### b. Promotion ROP model
 - The backtest is implemented in 7,321 promotion date (across 50 items in 10 stores), there are 6,799 overstock dates with the average excess rate at 14.91% and 522 outstock dates with the average shortage rate at 3.92%.
-## 4. RECOMMENDATIONS:
+## 4. ACT:
 #### a. Adopting the Seasonality-Adjusted ROP model for inventory planning.
 By applying category-specific safety stock levels, we can prioritize availability for high-performance items while minimizing carrying costs for slower-moving stock.
 #### b. Adopting store-item specific lift factor
