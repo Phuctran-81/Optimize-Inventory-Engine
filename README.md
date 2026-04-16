@@ -35,13 +35,13 @@ New drived columns were created to unlock deeper insight:
 - Primary Key: create primary_key to manage data.
 ### B. Silver to Gold
 Create two new table gold.dim_seasonality_index and gold.dim_abc_category to optimize the performance when updating new data.
-#### a. gold.dim_seasonality_index table
+#### a. gold.dim_seasonality_index table *([CLick to jump SQL Script](https://github.com/Phuctran-81/Reorder-Point-Setup-Model/blob/main/scripts/gold/proc_load_gold_dim_seasonality_index.sql))*
 - Calculating the average of the ratio between weekday sales and average week sales to get seasonality index of each weekday.
 - Performed ROW_NUMBER () to create primary key for this table.
-#### b. gold.dim_category
+#### b. gold.dim_category *([Click to jump to SQL Script](https://github.com/Phuctran-81/Reorder-Point-Setup-Model/blob/main/scripts/gold/proc_load_gold_dim_category.sql))*
 - Performed Window function rolling-sum the percentage of revenue of each item at each store to cagorize the item.
 - Performed ROW_NUMBER () to create primary key for this table.
-##### c. Gold.fact_train
+#### c. Gold.fact_train *([Click to jump to SQL Script](https://github.com/Phuctran-81/Reorder-Point-Setup-Model/blob/main/scripts/gold/proc_load_gold_fact_train.sql))*
 - Performed Window_function to calculate the 30 day average sales of each item at each store and the 30 day standard deviation of sales of each item at each store.
 - Flagging the promotion day by detecting days where sales > 30 day average sales + 2 * 30 day standard deviation.
 - Performed JOIN function to get foreign key from gold.dim_category and gold.dim_seasonality_index table.
@@ -138,3 +138,9 @@ The traditional ROP model
 By applying category-specific safety stock levels, we can prioritize availability for high-performance items while minimizing carrying costs for slower-moving stock.
 #### b. Adopting store-item specific lift factor
 By applying store-item specific lift factor for calculating ROP and adding 10% tactical safety buffer, this can help mitigate the risk of abnormal demand surges, specifically addressing the current 3.92% shortage rate observed during previous promotions.
+# III. Dataset and Tools used: 
+- Datasets:
+  + [train](https://github.com/Phuctran-81/Reorder-Point-Setup-Model/releases/tag/V1.0.0) is dataset used to build the model.
+  + [test](https://github.com/Phuctran-81/Reorder-Point-Setup-Model/releases/tag/V1.0.0) is dataset contained the final year data and ROP using for testing the success level.
+- Database: SQL Server Management Studio 21.
+- Data visualization: Access the dashboard at [Tableau Public].
