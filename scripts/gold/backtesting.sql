@@ -6,7 +6,7 @@ SELECT
   	a.week_calendar,
   	a.store_id,
   	a.item_Id,
-  	sales,
+  	a.sales,
   	a.weekday_number,
   	c.abc_category,
   	CASE 
