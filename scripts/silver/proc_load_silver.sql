@@ -19,7 +19,8 @@ SELECT
   	sales, 
   	DATENAME (weekday, date) AS weekday_name,
   	DATEPART (weekday,date) AS weekday_number
-FROM bronze.train;
+FROM bronze.train
+WHERE sales != 0   ;
 GO
 
 -- This compresses the data and changes the storage from Rowstore to Columnstore
