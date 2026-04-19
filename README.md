@@ -77,20 +77,27 @@ To ensure the ROP was responsive to real-word volatility, the analysis focused o
 
 ## 5. SHARE:
 #### a. Seasonality-Adjusted ROP model
-- The backtest is implemented in total 26,474 weeks (across 50 items in 10 stores), there are **26,275 overstock weeks** with the **average excess rate at 21.77%** and **199 outstock weeks** with the **average shortage rate at 2.07%**.
-<img width="1607" height="751" alt="image" src="https://github.com/user-attachments/assets/4f88cf6c-e9ac-443e-bb55-9706c2f677e2" />
+- The backtest is implemented in total 26,500 weeks (across 50 items in 10 stores), there are **26,211 overstock weeks** with the **average excess rate at 20.78%** and **289 outstock weeks** with the **average shortage rate at 2.44%**.
+<img width="1583" height="749" alt="image" src="https://github.com/user-attachments/assets/7ded9bda-4852-41e1-b386-b5074ee256e3" />
+
 
 The seasonality-adjusted ROP model
-- The Seasonality-Adjusted ROP model satisfies the **service level of 99%** which is similar to Traditional ROP model while simultaneously **reducing weekly excess inventory by 2.82%** compared to the traditional ROP method.
-<img width="1602" height="745" alt="image" src="https://github.com/user-attachments/assets/2965561c-cbf9-4674-8ea1-ebaf283f0c37" />
+- The Seasonality-Adjusted ROP model satisfies the **service level of 99%** which is similar to Traditional ROP model while simultaneously **reducing weekly excess inventory by 2.98%** compared to the traditional ROP method.
+<img width="1585" height="650" alt="image" src="https://github.com/user-attachments/assets/4d4b00e0-bbdb-4dfa-b74f-b0db848f8daf" />
+
 The traditional ROP model
 
 #### b. Promotion ROP model
-- The backtest is implemented in 7,321 promotion date (across 50 items in 10 stores), there are 6,799 overstock dates with the average excess rate at 14.91% and 522 outstock dates with the average shortage rate at 3.92%.
-<img width="1604" height="743" alt="image" src="https://github.com/user-attachments/assets/aa3f1532-742a-4db7-bea9-8473b42380b9" />
+- The backtest is implemented in 8,115 promotion date (across 50 items in 10 stores), there are 7,669 overstock dates with the average excess rate at 13.4% and 446 outstock dates with the average shortage rate at 3.74%.
+<img width="1588" height="746" alt="image" src="https://github.com/user-attachments/assets/0e23ad2f-586f-4d06-a2a7-39193747c174" />
 
-- After backtesting Promotion ROP i decide to plus 10% Promotion ROP to cover abnormal demand surge dates. The results show that the number of outstock dates decrease significantly from 522 outstock date of old model to 48 outstock dates. The shortage rate also drop to 2.93%, however the excess rate higher than olde model approximately 10%.
-<img width="1601" height="745" alt="image" src="https://github.com/user-attachments/assets/d2f04fa8-faa3-44dd-a2ba-3016ff8772b2" />
+
+
+
+
+- After backtesting Promotion ROP i decide to plus 10% Promotion ROP to cover abnormal demand surge dates. The results show that the number of outstock dates decrease significantly from 446 outstock date of old model to 34 outstock dates. The shortage rate also drop to 2.35%, however the excess rate higher than olde model approximately 10%.
+<img width="1582" height="745" alt="image" src="https://github.com/user-attachments/assets/9ef69b19-3c18-4cf5-8dd5-ef5a49d017fe" />
+
 
 
 
