@@ -1,7 +1,7 @@
 # Inventory Optimization 
 ## I. OVERALL
 ## 1. Executive Summary
-**Objective:** Engineered an automated **Inventory Requirement Model** to establish **Target Stock Levels (TSL)** for 500 unique store-item combinations to **resolves the "Overstock vs. Stock-out" paradox**. Based on the assumption of ordering once every 7 days, the model maintains a 99% Service Level while the excess rate is at 20%.
+**Objective:** Engineered an automated **Inventory Optimization Model** to establish **Target Stock Levels (TSL)** for 500 unique store-item combinations to **resolves the "Overstock vs. Stock-out" paradox**. Based on the assumption of ordering once every 7 days, the model maintains a 99% Service Level while the excess rate is at 20%.
 ## 2. Key Project Insights
 - **High-Precision Seasonality:** Identified significant variance between weekday demand and weekly averages that traditional model overlook. By incorporating these fluctuations, the model generates highly accurate, day-specific demand forecasts.
 - **Automated Promotion Detection:** Developed a statistical outlier detection model (Basline 30day + 2 standard deviation) to flag missing promotion dates and calculate a **Promotion Lift Factor**, reducing shortage risks during high-traffic events.
