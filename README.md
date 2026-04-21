@@ -3,7 +3,7 @@
 ## 1. Executive Summary
 **Objective:** Engineered an automated **Inventory Requirement Model** to establish **Target Stock Levels (TSL)** for 500 unique store-item combinations to **resolves the "Overstock vs. Stock-out" paradox**. Based on the assumption of ordering once every 7 days, the model maintains a 99% Service Level while the excess rate is at 20%.
 ## 2. Key Project Insights
-- **High-Precision Seasonality:** Identified significant variance between weekday demand and weekly averages that traditional model overlook. By incorporating these fluctuations, the model generates highly accurate, day-specifi demand forecasts.
+- **High-Precision Seasonality:** Identified significant variance between weekday demand and weekly averages that traditional model overlook. By incorporating these fluctuations, the model generates highly accurate, day-specific demand forecasts.
 - **Automated Promotion Detection:** Developed a statistical outlier detection model (Basline 30day + 2 standard deviation) to flag missing promotion dates and calculate a **Promotion Lift Factor**, reducing shortage risks during high-traffic events.
 - **Strategic Capital Allocation:** Implemented ABC Revenue Classification to priortize Class A items driving 80% of total revenue, ensuring 90% daily availability for top-performers while minimizing the "carrying cost" of slow-moving (Class C) stock.
 - **Validated Reliability:** Conducted a rigorous 12-month backtest to prove model stability and financial impact before proposing operational deployment.
@@ -31,7 +31,7 @@ Data consistency Verification:
 - Checking data errors to ensure no null values and no zero sales. Removed one row have zero sales.
 #### Data enrichment
 New drived columns were created to unlock deeper insight:
-- Temporal Feature: calculating new column such as week_calendar to enable calculate the weekly inventory, extracting weekday_name and weekday_number to enable calculate the seasonality of weekday sales, creating new column dwh_create_date to manage data daily updated.
+- Temporal Feature: calculating new column such as week_calendar to enable calculate the weekly demand, extracting weekday_name and weekday_number to enable calculate the seasonality of weekday sales, creating new column dwh_create_date to manage data daily updated.
 - Primary Key: create primary_key to manage data.
 ### B. Silver to Gold
 Using **Star Schema Model** to optimize the performance when updating new data.
@@ -50,7 +50,7 @@ Using **Star Schema Model** to optimize the performance when updating new data.
 
 
 ## 4. ANALYZE:
-To ensure the ROP was responsive to real-word volatility, the analysis focused on four signals:
+To ensure the Target Stock Level (TSL) was responsive to real-word volatility, the analysis focused on four signals:
 - Systemic Seasonality: Calculated unique Seasonality Indices for 500 store-item combinations.
   + Because sales of this dataset is seasonal ( the 16.7% sunday surge and 19.45% Monday lull compared to the average week sales), calculating store-item specific indices of each weekday to estimate the demand more accuracy.
 - ABC Segmentation:
@@ -58,36 +58,40 @@ To ensure the ROP was responsive to real-word volatility, the analysis focused o
 - Heuristic Promotion Detection:
   + Engineered a statistical outlier detection model (Baseline + 2 σ) to identify and "flag" historical promotion dates where metadata was missing, preventing demand spikes from skewing the standard seasonality index.
 - Performance Validation (Backtesting): 
-  + **Methodology:** Simulated ordering cycles (weekly for normal date and daily for promotion date) by comparing forecasted ROP against actual demand over the final year of the 5-year dataset.
+    + **Methodology:** Simulated ordering cycles (weekly for normal date and daily for promotion date) by comparing the sum of 7-day Target Stock Level (TSL) against the sum of 7-day actual sales over the final year of the 5-year dataset.
   + **Findings:** \
     **Normal Dates:** The seasonality-adjusted model maintained a 99% service level while achieving a 2.82% reduction in excess inventory compared to the baseline method. \
-    **Promotion Dates:** The promotion ROP model maintained a 92% service level with the average excess rate at 14.91% and the average shortage rate at 3.92%. 
+    **Promotion Dates:** The promotion TSL model maintained a 92% service level with the average excess rate at 14.91% and the average shortage rate at 3.92%. 
 ### Build ROP Model
 **a. Seasonality-Adjusted Model**
-- The formular for calculating Inventory ROP: 
-<img width="1550" height="81" alt="image" src="https://github.com/user-attachments/assets/697ce8dc-80bd-43a3-9d98-ad49dc6b54cb" />
+- The formular for calculating **Target Stock Level (TSL)**: 
+<img width="1700" height="89" alt="image" src="https://github.com/user-attachments/assets/8df3a63d-f6d7-47dc-b98a-fe56da497fab" />
+
 
 **b. Traditional Model**
-- The formular for calculating Inventory ROP: 
-<img width="1559" height="91" alt="image" src="https://github.com/user-attachments/assets/04763714-c377-403d-ac6e-2bc781ceafe3" />
+- The formular for calculating **Target Stock Level (TSL)**: 
+<img width="1690" height="90" alt="image" src="https://github.com/user-attachments/assets/57c57774-74f9-4a98-91a2-b7c60364168e" />
 
-**c. Promotion ROP**
-- The formular for calculating Inventory ROP: 
-<img width="1582" height="89" alt="image" src="https://github.com/user-attachments/assets/86e1b3ba-5de0-4cf5-b3f1-dff6e51de36e" />
+
+**c. Promotion Target Stock Level**
+- The formular for calculating **Target Stock Level (TSL)**: 
+<img width="1711" height="94" alt="image" src="https://github.com/user-attachments/assets/b0d31f26-0cfd-4b4e-9097-cbaf269896d8" />
+
 
 ## 5. SHARE:
-#### a. Seasonality-Adjusted ROP model
+#### a. Seasonality-Adjusted model
 - The backtest is implemented in total 26,500 weeks (across 50 items in 10 stores), there are **26,211 overstock weeks** with the **average excess rate at 20.78%** and **289 outstock weeks** with the **average shortage rate at 2.44%**.
-<img width="1583" height="749" alt="image" src="https://github.com/user-attachments/assets/7ded9bda-4852-41e1-b386-b5074ee256e3" />
+<img width="1599" height="745" alt="image" src="https://github.com/user-attachments/assets/b427d2c3-e387-4cc8-9b49-d6551310019d" />
 
 
-The seasonality-adjusted ROP model
-- The Seasonality-Adjusted ROP model satisfies the **service level of 99%** which is similar to Traditional ROP model while simultaneously **reducing weekly excess inventory by 2.98%** compared to the traditional ROP method.
-<img width="1585" height="650" alt="image" src="https://github.com/user-attachments/assets/4d4b00e0-bbdb-4dfa-b74f-b0db848f8daf" />
 
-The traditional ROP model
+- The Seasonality-Adjusted model satisfies the **service level of 99%** which is similar to Traditional model while simultaneously **reducing weekly excess inventory by 2.98%** compared to the traditional model.
+<img width="1597" height="743" alt="image" src="https://github.com/user-attachments/assets/5097c516-753c-42d9-9be6-7c7bbfe92990" />
 
-#### b. Promotion ROP model
+
+
+
+#### b. Promotion model
 - The backtest is implemented in 8,115 promotion date (across 50 items in 10 stores), there are 7,669 overstock dates with the average excess rate at 13.4% and 446 outstock dates with the average shortage rate at 3.74%.
 <img width="1588" height="746" alt="image" src="https://github.com/user-attachments/assets/0e23ad2f-586f-4d06-a2a7-39193747c174" />
 
@@ -95,14 +99,14 @@ The traditional ROP model
 
 
 
-- After backtesting Promotion ROP i decide to plus 10% Promotion ROP to cover abnormal demand surge dates. The results show that the number of outstock dates decrease significantly from 446 outstock date of old model to 34 outstock dates. The shortage rate also drop to 2.35%, however the excess rate higher than olde model approximately 10%.
+- After backtesting Promotion Target Stock Level, I decide to plus 10% Promotion Target Stock Level to cover abnormal demand surge dates. The results show that the number of outstock dates decrease significantly from 446 outstock date of old model to 34 outstock dates. The shortage rate also drop to 2.35%, however the excess rate higher than old model approximately 10%.
 <img width="1582" height="745" alt="image" src="https://github.com/user-attachments/assets/9ef69b19-3c18-4cf5-8dd5-ef5a49d017fe" />
 
 
 
 
 ## 4. ACT:
-1. Adopt Seasonality-Adjusted ROP: Implement for entire item and store to capture immediate capital efficiency gains.
+1. Adopt Seasonality-Adjusted Model: Implement for entire item and store to capture immediate capital efficiency gains.
 2. Tactical Promotion Buffers: Add a 10% safety margin during promotional dates to resolve the shortage risk.
 # III. Dataset and Tools used: 
 - Datasets:
